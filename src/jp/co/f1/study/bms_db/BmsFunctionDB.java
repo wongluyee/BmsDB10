@@ -71,13 +71,33 @@ public class BmsFunctionDB {
 	public void addFunction() {
 		// bookオブジェクトを作成する
 		Book book = new Book();
+		String isbn;
 
 		// ユーザが入力した情報をbookの各フィールドに格納する
-		System.out.println("***書籍情報登録***");
-		System.out.println("ISBNを入力してください。");
-		System.out.println("【ISBN】⇒");
-		String isbn = objKeyIn.readKey();
-		book.setIsbn(isbn);
+		loopIsbn: while (true) {
+			System.out.println("***書籍情報登録***");
+			System.out.println("ISBNを入力してください。");
+			System.out.println("【ISBN】⇒");
+			isbn = objKeyIn.readKey();
+
+			// 空文字かどうかチェック
+			if (isbn.equals("")) {
+				System.out.println("空文字が入力されました。ISBNを入力して下さい！");
+				continue;
+			}
+
+			// ISBN重複しているかどうかチェック
+			bookList = objDao.selectAll();
+			for (int i = 0; i < bookList.size(); i++) {
+				if (isbn.equals(bookList.get(i).getIsbn())) {
+					System.out.println("入力ISBNは既に登録されています。:" + isbn);
+					continue loopIsbn;
+				}
+			}
+
+			book.setIsbn(isbn);
+			break;
+		}
 
 		System.out.println("タイトルを入力してください。");
 		System.out.println("【タイトル】⇒");
@@ -105,14 +125,25 @@ public class BmsFunctionDB {
 
 	public void deleteFunction() {
 		listFunction();
-		System.out.println();
-		System.out.println("***削除対象の書籍選択***");
-		System.out.println("削除したい書籍（ISBN）を選択してくだいさい⇒");
-
-		// 削除対象の書籍データの取得する
-		String isbn = objKeyIn.readKey();
+		String isbn;
 		Book book = new Book();
-		book = objDao.selectByIsbn(isbn);
+
+		while (true) {
+			System.out.println();
+			System.out.println("***削除対象の書籍選択***");
+			System.out.println("削除したい書籍（ISBN）を選択してくだいさい⇒");
+
+			// 削除対象の書籍データの取得する
+			isbn = objKeyIn.readKey();
+			book = objDao.selectByIsbn(isbn);
+
+			// 削除対象のISBNが存在しない場合
+			if (book.getIsbn() == null) {
+				System.out.println("入力ISBN：" + isbn + "は存在しませんでした。");
+				continue;
+			}
+			break;
+		}
 
 		System.out.println("***削除対象書籍情報***");
 		System.out.println("ISBN" + TAB + "Title" + TAB + "Price");
@@ -134,12 +165,25 @@ public class BmsFunctionDB {
 
 	public void updateFunction() {
 		listFunction();
-
-		System.out.println("***変更対象書籍情報***");
-		System.out.println("変更したい書籍（ISBN）を選択してください⇒");
-		String isbn = objKeyIn.readKey();
+		String isbn;
 		Book book = new Book();
-		book = objDao.selectByIsbn(isbn);
+
+		while (true) {
+			System.out.println("***変更対象書籍情報***");
+			System.out.println("変更したい書籍（ISBN）を選択してください⇒");
+
+			isbn = objKeyIn.readKey();
+			book = objDao.selectByIsbn(isbn);
+
+			// 変更対象のISBNが存在しない場合
+			if (book.getIsbn() == null) {
+				System.out.println("入力ISBN：" + isbn + "は存在しませんでした。");
+				continue;
+			}
+			break;
+		}
+
+		// 後でコンソールに表示用
 		String oldTitle = book.getTitle();
 		int oldPrice = book.getPrice();
 
@@ -150,7 +194,7 @@ public class BmsFunctionDB {
 		System.out.println("価格【" + oldPrice + "】変更⇒");
 		int price = objKeyIn.readInt();
 		book.setPrice(price);
-		
+
 		// DBに保存する
 		objDao.update(book, isbn);
 
