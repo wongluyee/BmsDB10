@@ -3,10 +3,14 @@ package jp.co.f1.study.bms_db;
 import java.util.ArrayList;
 
 import jp.co.f1.study.common.KeyIn;
+import jp.co.f1.study.common.MyFormat;
 
 public class BmsFunctionDB {
 	private KeyIn objKeyIn = new KeyIn();
 	private final String TAB = "\t";
+
+	// 価格のフォーマット
+	MyFormat fm = new MyFormat();
 
 	//書籍データを格納するArrayListオブジェクト
 	ArrayList<Book> bookList = new ArrayList<Book>();
@@ -56,7 +60,8 @@ public class BmsFunctionDB {
 			String isbn = book.getIsbn();
 			String title = book.getTitle();
 			int price = book.getPrice();
-			System.out.println((i + 1) + ".	" + isbn + TAB + title + TAB + price);
+			String formattedPrice = fm.moneyFormat(price);
+			System.out.println((i + 1) + ".	" + isbn + TAB + title + TAB + formattedPrice);
 		}
 
 		System.out.println("----------------------------------");
@@ -108,6 +113,8 @@ public class BmsFunctionDB {
 		System.out.println("【価格】⇒");
 		int price = objKeyIn.readInt();
 		book.setPrice(price);
+		// 価格フォーマット
+		String formattedPrice = fm.moneyFormat(price);
 
 		// データベースに登録する
 		objDao.insert(book);
@@ -117,7 +124,7 @@ public class BmsFunctionDB {
 		System.out.println("***登録済書籍情報***");
 		System.out.println("ISBN" + TAB + "Title" + TAB + "Price");
 		System.out.println("---------------------------------");
-		System.out.println(isbn + TAB + title + TAB + price);
+		System.out.println(isbn + TAB + title + TAB + formattedPrice);
 		System.out.println("---------------------------------");
 		System.out.println("上記書籍が登録されました。");
 		System.out.println();
@@ -145,10 +152,11 @@ public class BmsFunctionDB {
 			break;
 		}
 
+		String formattedPrice = fm.moneyFormat(book.getPrice());
 		System.out.println("***削除対象書籍情報***");
 		System.out.println("ISBN" + TAB + "Title" + TAB + "Price");
 		System.out.println("---------------------------------");
-		System.out.println(book.getIsbn() + TAB + book.getTitle() + TAB + book.getPrice());
+		System.out.println(book.getIsbn() + TAB + book.getTitle() + TAB + formattedPrice);
 		System.out.println("---------------------------------");
 		System.out.println("上記書籍を削除しますか（y/n）？");
 
@@ -186,14 +194,16 @@ public class BmsFunctionDB {
 		// 後でコンソールに表示用
 		String oldTitle = book.getTitle();
 		int oldPrice = book.getPrice();
+		String formattedOldPrice = fm.moneyFormat(oldPrice);
 
 		System.out.println("タイトル【" + oldTitle + "】変更⇒");
 		String title = objKeyIn.readKey();
 		book.setTitle(title);
 
-		System.out.println("価格【" + oldPrice + "】変更⇒");
+		System.out.println("価格【" + formattedOldPrice + "】変更⇒");
 		int price = objKeyIn.readInt();
 		book.setPrice(price);
+		String formattedNewPrice = fm.moneyFormat(price);
 
 		// DBに保存する
 		objDao.update(book, isbn);
@@ -205,7 +215,7 @@ public class BmsFunctionDB {
 		System.out.println(TAB + "変更前" + TAB + "変更後");
 		System.out.println("ISBN" + TAB + book.getIsbn() + " → " + TAB + book.getIsbn());
 		System.out.println("Title" + TAB + oldTitle + " → " + TAB + book.getTitle());
-		System.out.println("Price" + TAB + oldPrice + " → " + TAB + book.getPrice());
+		System.out.println("Price" + TAB + formattedOldPrice + " → " + TAB + formattedNewPrice);
 		System.out.println("---------------------------------");
 
 	}
