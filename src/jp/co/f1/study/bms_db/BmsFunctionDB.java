@@ -35,7 +35,7 @@ public class BmsFunctionDB {
 
 		switch (inputNum) {
 		case 1 -> addFunction();
-		case 2 -> System.out.println("Delete book");
+		case 2 -> deleteFunction();
 		case 3 -> System.out.println("Update book");
 		case 4 -> listFunction();
 		case 9 -> System.out.println("**処理を終了しました**");
@@ -101,5 +101,34 @@ public class BmsFunctionDB {
 		System.out.println("---------------------------------");
 		System.out.println("上記書籍が登録されました。");
 		System.out.println();
+	}
+
+	public void deleteFunction() {
+		listFunction();
+		System.out.println();
+		System.out.println("***削除対象の書籍選択***");
+		System.out.println("削除したい書籍（ISBN）を選択してくだいさい⇒");
+
+		// 削除対象の書籍データの取得する
+		String isbn = objKeyIn.readKey();
+		Book book = new Book();
+		book = objDao.selectByIsbn(isbn);
+
+		System.out.println("***削除対象書籍情報***");
+		System.out.println("ISBN" + TAB + "Title" + TAB + "Price");
+		System.out.println("---------------------------------");
+		System.out.println(book.getIsbn() + TAB + book.getTitle() + TAB + book.getPrice());
+		System.out.println("---------------------------------");
+		System.out.println("上記書籍を削除しますか（y/n）？");
+
+		String confirm = objKeyIn.readKey();
+
+		if (confirm.toLowerCase().equals("y")) {
+			objDao.delete(book);
+			System.out.println("ISBN: " + isbn + "の書籍が削除されました");
+			System.out.println();
+		} else {
+			displayMenu();
+		}
 	}
 }
