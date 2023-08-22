@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class BookDAO {
 	private static String RDB_DRIVE = "com.mysql.cj.jdbc.Driver";
-	private static String URL = "jdbc:mysql://localhost/mybookdb?characterEncoding=utf8";
+	private static String URL = "jdbc:mysql://localhost/mybookdb";
 	private static String USER = "root";
 	private static String PASS = "password";
 
@@ -67,5 +67,36 @@ public class BookDAO {
 			}
 		}
 		return bookList;
+	}
+
+	// 新しい本を追加する
+	public void insert(Book book) {
+
+		Connection con = null;
+		Statement smt = null;
+
+		try {
+			String sql = "INSERT INTO bookinfo VALUES('" + book.getIsbn() + "','" + book.getTitle() + "',"
+					+ book.getPrice() + ")";
+			con = getConnection();
+			smt = con.createStatement();
+			smt.executeUpdate(sql);
+
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		} finally {
+			if (smt != null) {
+				try {
+					smt.close();
+				} catch (SQLException ignore) {
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException ignore) {
+				}
+			}
+		}
 	}
 }
