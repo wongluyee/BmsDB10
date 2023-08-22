@@ -36,7 +36,7 @@ public class BmsFunctionDB {
 		switch (inputNum) {
 		case 1 -> addFunction();
 		case 2 -> deleteFunction();
-		case 3 -> System.out.println("Update book");
+		case 3 -> updateFunction();
 		case 4 -> listFunction();
 		case 9 -> System.out.println("**処理を終了しました**");
 		default -> System.out.println("正しいメニュー番号を入力してください。");
@@ -130,5 +130,39 @@ public class BmsFunctionDB {
 		} else {
 			displayMenu();
 		}
+	}
+
+	public void updateFunction() {
+		listFunction();
+
+		System.out.println("***変更対象書籍情報***");
+		System.out.println("変更したい書籍（ISBN）を選択してください⇒");
+		String isbn = objKeyIn.readKey();
+		Book book = new Book();
+		book = objDao.selectByIsbn(isbn);
+		String oldTitle = book.getTitle();
+		int oldPrice = book.getPrice();
+
+		System.out.println("タイトル【" + oldTitle + "】変更⇒");
+		String title = objKeyIn.readKey();
+		book.setTitle(title);
+
+		System.out.println("価格【" + oldPrice + "】変更⇒");
+		int price = objKeyIn.readInt();
+		book.setPrice(price);
+		
+		// DBに保存する
+		objDao.update(book, isbn);
+
+		System.out.println();
+		System.out.println("更新済書籍情報");
+		System.out.println("下記のように書籍情報が更新されました。");
+		System.out.println("---------------------------------");
+		System.out.println(TAB + "変更前" + TAB + "変更後");
+		System.out.println("ISBN" + TAB + book.getIsbn() + " → " + TAB + book.getIsbn());
+		System.out.println("Title" + TAB + oldTitle + " → " + TAB + book.getTitle());
+		System.out.println("Price" + TAB + oldPrice + " → " + TAB + book.getPrice());
+		System.out.println("---------------------------------");
+
 	}
 }

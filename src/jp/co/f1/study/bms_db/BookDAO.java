@@ -167,4 +167,34 @@ public class BookDAO {
 		}
 		return book;
 	}
+
+	public void update(Book book, String oldIsbn) {
+		Connection con = null;
+		Statement smt = null;
+
+		try {
+			String sql = "UPDATE bookinfo SET isbn='" + book.getIsbn() + "',title='" + book.getTitle() + "',price="
+					+ book.getPrice()
+					+ " WHERE isbn='" + oldIsbn + "'";
+			con = getConnection();
+			smt = con.createStatement();
+			smt.executeUpdate(sql);
+
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		} finally {
+			if (smt != null) {
+				try {
+					smt.close();
+				} catch (SQLException ignore) {
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException ignore) {
+				}
+			}
+		}
+	}
 }
